@@ -4,24 +4,78 @@ platforms: java
 author: alvadb
 ---
 
-#Getting Started with Resources - Deploy Using ARM Template - in Java #
+# Deploy an SSH Enabled VM with a Template in Node.js
 
+This sample explains how to use Azure Resource Manager templates to deploy your resources to Azure
+the Azure SDK for Java.
 
-  Resource: Manage Resource Sample (for 1.0.0-beta2) - demonstrates how to perform common tasks using the Microsoft Azure Resource management service.
-   - Deploy a resources using an ARM template.
- 
+When deploying an application definition with a template, you can provide parameter values to customize how the
+resources are created. You specify values for these parameters either inline or in a parameter file.
 
-## Running this Sample ##
+** On this page**
 
-To run this sample:
+- [Running this sample](#run)
+- [What is index.js doing?](#example)
+  - [Deploy the template](#deploy)
 
-Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file. See [how to create an auth file](https://github.com/Azure/azure-sdk-for-java/blob/master/AUTH.md).
+<a id="run"></a>
+## Running this sample
 
-    git clone https://github.com/Azure-Samples/resources-java-deploy-using-arm-template.git
+1. Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file. See [how to create an auth file](https://github.com/Azure/azure-sdk-for-java/blob/master/AUTH.md).
 
-    cd resources-java-deploy-using-arm-template
+2. Clone the repository.
 
-    mvn clean compile exec:java
+```
+git clone https://github.com/Azure-Samples/resources-java-deploy-using-arm-template.git
+```
+
+3. Run the sample
+
+```
+cd resources-java-deploy-using-arm-template
+mvn clean compile exec:java
+```
+
+<a id="example"></a>
+## What is DeployUsingARMTemplate.java doing?
+
+The sample starts by setting up some variables.
+
+```java
+final String rgName = ResourceNamer.randomResourceName("rgRSAT", 24);
+final String deploymentName = ResourceNamer.randomResourceName("dpRSAT", 24);
+```
+
+Then it logs in to the account using your authentication file.
+
+```java
+final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
+
+Azure azure = Azure.configure()
+        .withLogLevel(HttpLoggingInterceptor.Level.NONE)
+        .authenticate(credFile)
+        .withDefaultSubscription();
+```
+
+It creates a resource group into which it will deploy the template.
+
+```java
+azure.resourceGroups().define(rgName)
+    .withRegion(Region.US_WEST)
+    .create();
+```
+
+<a id="deploy"></a>
+### Deploy the template
+
+```java
+azure.deployments().define(deploymentName)
+    .withExistingResourceGroup(rgName)
+    .withTemplate(templateJson)
+    .withParameters("{}")
+    .withMode(DeploymentMode.INCREMENTAL)
+    .create();
+```
 
 ## More information ##
 
