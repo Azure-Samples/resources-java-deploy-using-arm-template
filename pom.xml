@@ -6,26 +6,6 @@
     <name>DeployUsingARMTemplate</name>
     <description></description>
     <url>https://github.com/Azure/resources-java-deploy-using-arm-template</url>
-    <repositories>
-        <repository>
-            <id>commicrosoftazure-1320</id>
-           <name>1320 staging repo</name>
-            <url>https://oss.sonatype.org/service/local/repositories/commicrosoftazure-1320/content</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>commicrosoftazure-1321</id>
-            <name>1326 staging repo</name>
-            <url>https://oss.sonatype.org/service/local/repositories/commicrosoftazure-1326/content</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>commicrosoftrest-1004</id>
-            <name>1004 staging repo</name>
-            <url>https://oss.sonatype.org/service/local/repositories/commicrosoftrest-1004/content</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>com.microsoft.azure</groupId>
@@ -37,7 +17,7 @@
         <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
-                <directory>resources</directory>
+                <directory>${basedir}/src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
@@ -46,7 +26,8 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainClass>com.microsoft.azure.management.compute.samples.DeployUsingARMTemplate</mainClass>
+                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate</mainClass>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
             <plugin>
@@ -74,7 +55,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.microsoft.azure.management.compute.samples.DeployUsingARMTemplate</mainClass>
+                                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

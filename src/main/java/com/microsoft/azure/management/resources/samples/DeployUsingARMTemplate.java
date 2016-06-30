@@ -19,8 +19,6 @@ import com.microsoft.azure.Azure;
 import com.microsoft.azure.management.resources.DeploymentMode;
 import com.microsoft.azure.management.resources.fluentcore.arm.Region;
 import com.microsoft.azure.management.resources.fluentcore.utils.ResourceNamer;
-import com.microsoft.azure.management.samples.Utils;
-
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
