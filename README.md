@@ -1,5 +1,5 @@
 ---
-services: azure-resource-manager
+services: compute
 platforms: java
 author: alvadb
 ---
