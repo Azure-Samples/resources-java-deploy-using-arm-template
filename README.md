@@ -1,7 +1,7 @@
 ---
 services: azure-resource-manager
 platforms: java
-author: selvasingh
+author: alvadb
 ---
 
 #Getting Started with Resources - Deploy Using ARM Template - in Java #
