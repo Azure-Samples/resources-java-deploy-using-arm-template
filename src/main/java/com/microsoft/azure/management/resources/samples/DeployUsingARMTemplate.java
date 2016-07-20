@@ -79,7 +79,7 @@ public final class DeployUsingARMTemplate {
                         .withMode(DeploymentMode.INCREMENTAL)
                         .create();
 
-                    System.out.println("Started a deployment for an Azure App Service: " + deploymentName);
+                    System.out.println("Completed the deployment: " + deploymentName);
 
                 } catch (Exception f) {
 
