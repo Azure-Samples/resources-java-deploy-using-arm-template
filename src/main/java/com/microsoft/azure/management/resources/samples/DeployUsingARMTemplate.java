@@ -15,10 +15,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.microsoft.azure.Azure;
+import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.resources.DeploymentMode;
 import com.microsoft.azure.management.resources.fluentcore.arm.Region;
 import com.microsoft.azure.management.resources.fluentcore.utils.ResourceNamer;
+
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
@@ -79,7 +80,7 @@ public final class DeployUsingARMTemplate {
                         .withMode(DeploymentMode.INCREMENTAL)
                         .create();
 
-                    System.out.println("Completed the deployment: " + deploymentName);
+                    System.out.println("Started a deployment for an Azure App Service: " + deploymentName);
 
                 } catch (Exception f) {
 
