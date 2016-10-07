@@ -1,17 +1,16 @@
 ---
-services: azure-resource-manager
+services: Resources
 platforms: java
 author: alvadb
 ---
 
-# Getting Started with Resources - Deploy Using ARM Template - in Java
+#Getting Started with Resources - Deploy Using ARM Template - in Java #
 
 
-  Resource: Manage Resource Sample (for 1.0.0-beta2) - demonstrates how to perform common tasks using the Microsoft Azure Resource management service.
-   - Deploy a resources using an ARM template.
+  Azure Resource sample for deploying resources using an ARM template.
  
 
-## Running this Sample
+## Running this Sample ##
 
 To run this sample:
 
@@ -23,7 +22,7 @@ Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an aut
 
     mvn clean compile exec:java
 
-## More information
+## More information ##
 
 [http://azure.com/java] (http://azure.com/java)
 
