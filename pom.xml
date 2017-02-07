@@ -3,24 +3,30 @@
     <groupId>com.microsoft.azure</groupId>
     <artifactId>resources-java-deploy-using-arm-template</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>DeployUsingARMTemplate</name>
+    <name>DeployUsingARMTemplate.java</name>
     <description></description>
     <url>https://github.com/Azure/resources-java-deploy-using-arm-template</url>
     <dependencies>
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure</artifactId>
-            <version>1.0.0-beta4.1</version>
+            <version>1.0.0-beta5</version>
         </dependency>
     </dependencies>
     <build>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate</mainClass>
+                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate.java</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -48,7 +54,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate</mainClass>
+                                    <mainClass>com.microsoft.azure.management.resources.samples.DeployUsingARMTemplate.java</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
