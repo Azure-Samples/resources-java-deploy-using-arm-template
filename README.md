@@ -1,9 +1,12 @@
 ---
+page_type: sample
 languages:
 - java
-page_type: sample
 products:
 - azure
+services: Resources
+platforms: java
+author: yaohaizh
 ---
 
 ## Getting Started with Resources - Deploy Using ARM Template - in Java ##
