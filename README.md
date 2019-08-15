@@ -9,9 +9,11 @@ extensions:
 - platforms: java
 ---
 
-# Getting Started with Resources - Deploy Using ARM Template - in Java
+# Getting Started with Resources - Deploy Using ARM Template - in Java #
 
-Azure Resource sample for deploying resources using an ARM template.
+
+  Azure Resource sample for deploying resources using an ARM template.
+ 
 
 ## Running this Sample ##
 
