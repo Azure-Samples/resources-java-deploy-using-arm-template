@@ -1,25 +1,25 @@
-/**
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for
- * license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-package com.microsoft.azure.management.resources.samples;
+package com.azure.resourcemanager.resources.samples;
 
+import com.azure.core.credential.TokenCredential;
+import com.azure.core.http.policy.HttpLogDetailLevel;
+import com.azure.core.http.rest.PagedIterable;
+import com.azure.core.management.AzureEnvironment;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.resources.models.Deployment;
+import com.azure.resourcemanager.resources.models.DeploymentMode;
+import com.azure.resourcemanager.resources.models.DeploymentOperation;
+import com.azure.core.management.Region;
+import com.azure.core.management.profile.AzureProfile;
+import com.azure.resourcemanager.samples.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.microsoft.azure.PagedList;
-import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.resources.Deployment;
-import com.microsoft.azure.management.resources.DeploymentMode;
-import com.microsoft.azure.management.resources.DeploymentOperation;
-import com.microsoft.azure.management.resources.fluentcore.arm.Region;
-import com.microsoft.azure.management.resources.fluentcore.utils.SdkContext;
-import com.microsoft.rest.LogLevel;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,14 +31,15 @@ public final class DeployUsingARMTemplate {
 
     /**
      * Main function which runs the actual sample.
-     * @param azure instance of the azure client
+     *
+     * @param azureResourceManager instance of the azure client
      * @return true if sample runs successfully
      */
-    public static boolean runSample(Azure azure) {
-        final String rgName = SdkContext.randomResourceName("rgRSAT", 24);
-        final String deploymentName = SdkContext.randomResourceName("dpRSAT", 24);
+    public static boolean runSample(AzureResourceManager azureResourceManager) throws IOException, IllegalAccessException {
+        final String rgName = Utils.randomResourceName(azureResourceManager, "rgRSAT", 24);
+        final String deploymentName = Utils.randomResourceName(azureResourceManager, "dpRSAT", 24);
         try {
-            String templateJson = DeployUsingARMTemplate.getTemplate();
+            String templateJson = DeployUsingARMTemplate.getTemplate(azureResourceManager);
 
 
             //=============================================================
@@ -46,7 +47,7 @@ public final class DeployUsingARMTemplate {
 
             System.out.println("Creating a resource group with name: " + rgName);
 
-            azure.resourceGroups().define(rgName)
+            azureResourceManager.resourceGroups().define(rgName)
                     .withRegion(Region.US_EAST2)
                     .create();
 
@@ -61,7 +62,7 @@ public final class DeployUsingARMTemplate {
             //
             System.out.println("Starting a deployment for an Azure App Service: " + deploymentName);
 
-            azure.deployments().define(deploymentName)
+            azureResourceManager.deployments().define(deploymentName)
                     .withExistingResourceGroup(rgName)
                     .withTemplate(templateJson)
                     .withParameters("{}")
@@ -70,16 +71,11 @@ public final class DeployUsingARMTemplate {
 
             System.out.println("Started a deployment for an Azure App Service: " + deploymentName);
             return true;
-        } catch (Exception f) {
-
-            System.out.println(f.getMessage());
-            f.printStackTrace();
-
         } finally {
             try {
-                Deployment deployment = azure.deployments()
+                Deployment deployment = azureResourceManager.deployments()
                         .getByResourceGroup(rgName, deploymentName);
-                PagedList<DeploymentOperation> operations = deployment.deploymentOperations()
+                PagedIterable<DeploymentOperation> operations = deployment.deploymentOperations()
                         .list();
 
                 for (DeploymentOperation operation : operations) {
@@ -101,7 +97,7 @@ public final class DeployUsingARMTemplate {
 
             try {
                 System.out.println("Deleting Resource Group: " + rgName);
-                azure.resourceGroups().beginDeleteByName(rgName);
+                azureResourceManager.resourceGroups().beginDeleteByName(rgName);
                 System.out.println("Deleted Resource Group: " + rgName);
             } catch (NullPointerException npe) {
                 System.out.println("Did not create any resources in Azure. No clean up is necessary");
@@ -110,7 +106,6 @@ public final class DeployUsingARMTemplate {
             }
 
         }
-        return false;
     }
 
     /**
@@ -124,39 +119,44 @@ public final class DeployUsingARMTemplate {
             //=================================================================
             // Authenticate
 
-            final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
+            final AzureProfile profile = new AzureProfile(AzureEnvironment.AZURE);
+            final TokenCredential credential = new DefaultAzureCredentialBuilder()
+                .authorityHost(profile.getEnvironment().getActiveDirectoryEndpoint())
+                .build();
 
-            Azure azure = Azure.configure()
-                    .withLogLevel(LogLevel.NONE)
-                    .authenticate(credFile)
-                    .withDefaultSubscription();
+            AzureResourceManager azureResourceManager = AzureResourceManager
+                .configure()
+                .withLogLevel(HttpLogDetailLevel.BASIC)
+                .authenticate(credential, profile)
+                .withDefaultSubscription();
 
-            runSample(azure);
+            runSample(azureResourceManager);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private static String getTemplate() throws IllegalAccessException, JsonProcessingException, IOException {
-        final String hostingPlanName = SdkContext.randomResourceName("hpRSAT", 24);
-        final String webappName = SdkContext.randomResourceName("wnRSAT", 24);
-        final InputStream embeddedTemplate;
-        embeddedTemplate = DeployUsingARMTemplate.class.getResourceAsStream("/templateValue.json");
+    private static String getTemplate(AzureResourceManager azureResourceManager) throws IllegalAccessException, JsonProcessingException, IOException {
+        final String hostingPlanName = Utils.randomResourceName(azureResourceManager, "hpRSAT", 24);
+        final String webappName = Utils.randomResourceName(azureResourceManager, "wnRSAT", 24);
 
-        final ObjectMapper mapper = new ObjectMapper();
-        final JsonNode tmp = mapper.readTree(embeddedTemplate);
+        try (InputStream embeddedTemplate = DeployUsingARMTemplate.class.getResourceAsStream("/templateValue.json")) {
 
-        DeployUsingARMTemplate.validateAndAddFieldValue("string", hostingPlanName, "hostingPlanName", null, tmp);
-        DeployUsingARMTemplate.validateAndAddFieldValue("string", webappName, "webSiteName", null, tmp);
-        DeployUsingARMTemplate.validateAndAddFieldValue("string", "F1", "skuName", null, tmp);
-        DeployUsingARMTemplate.validateAndAddFieldValue("int", "1", "skuCapacity", null, tmp);
+            final ObjectMapper mapper = new ObjectMapper();
+            final JsonNode tmp = mapper.readTree(embeddedTemplate);
 
-        return tmp.toString();
+            DeployUsingARMTemplate.validateAndAddFieldValue("string", hostingPlanName, "hostingPlanName", null, tmp);
+            DeployUsingARMTemplate.validateAndAddFieldValue("string", webappName, "webSiteName", null, tmp);
+            DeployUsingARMTemplate.validateAndAddFieldValue("string", "F1", "skuName", null, tmp);
+            DeployUsingARMTemplate.validateAndAddFieldValue("int", "1", "skuCapacity", null, tmp);
+
+            return tmp.toString();
+        }
     }
 
     private static void validateAndAddFieldValue(String type, String fieldValue, String fieldName, String errorMessage,
-            JsonNode tmp) throws IllegalAccessException {
+                                                 JsonNode tmp) throws IllegalAccessException {
         // Add count variable for loop....
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode parameter = mapper.createObjectNode();
