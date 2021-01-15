@@ -5,8 +5,8 @@ languages:
 products:
 - azure
 extensions:
-  services: Resources
-  platforms: java
+- services: Resources
+- platforms: java
 ---
 
 # Getting Started with Resources - Deploy Using ARM Template - in Java #
